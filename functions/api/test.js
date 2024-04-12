@@ -1,7 +1,7 @@
 /**
  * POST /api/submit
  */
-export async function onRequestPost(context) {
+export async function onRequest(context) {
     try {
         //   let input = await context.request.formData();
 
