@@ -1,0 +1,24 @@
+{
+  "name": "call-llm-test",
+  "version": "1.0.0",
+  "description": "init",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rytmnkt/call-llm-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rytmnkt/call-llm-test/issues"
+  },
+  "homepage": "https://github.com/rytmnkt/call-llm-test#readme",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240405.0",
+    "typescript": "^5.4.5",
+    "wrangler": "^3.50.0"
+  }
+}

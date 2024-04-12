@@ -1,7 +1,9 @@
+let env: Env
 
-export async function onRequestPost(context, ) {
+export const onRequestPost: PagesFunction<Env> = async (context,) => {
   const { request } = context;
-  const { apiType, systemInput, userInput } = await request.json();
+  env = context.env;
+  const { apiType, systemInput, userInput } = await request.json() as { apiType: string, systemInput: string, userInput: string };
 
   switch (apiType) {
     case 'chatgpt':
@@ -17,11 +19,11 @@ export async function onRequestPost(context, ) {
 async function callChatGPTAPI(model, systemInput, userInput) {
   // OpenAI APIを呼び出すロジックを実装
   // ここでは疑似コードとしています
-  const response = await fetch('OpenAI APIのURL', {
+  const response = await fetch(env.CHATGPT_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
       model: model,
