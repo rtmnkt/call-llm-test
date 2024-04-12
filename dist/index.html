@@ -161,7 +161,15 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
       }
 
       console.log({ apiType, systemInput, userInput })
-      const decoder = json=>json?.choices?.[0]?.message?.content
+      const decoder = (() => {
+        switch (apiType) {
+          case 'chatgpt':
+          case 'chatgpt4': json => json?.choices?.[0]?.message?.content
+          case 'claude_opus':
+          case 'claude_haiku': json => json?.content?.[0]?.text
+          default: throw new Error('unknown apiType')
+        }
+      })()
       // google.script.run.withSuccessHandler(updateResponse).callAIAPI(apiType, systemInput, userInput);
       fetch('/api/callAIAPI', {
         method: 'POST',

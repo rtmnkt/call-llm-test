@@ -10,7 +10,12 @@ export const onRequestPost: PagesFunction<Env> = async (context,) => {
       return callChatGPTAPI('gpt-3.5-turbo-0125', systemInput, userInput);
     case 'chatgpt4':
       return callChatGPTAPI('gpt-4-0125-preview', systemInput, userInput);
-    // 他のAPIタイプに対するケースも同様に追加
+    case 'chatgpt_function':
+      return callChatGPTFunctionAPI(systemInput, userInput);
+    case 'claude_haiku':
+      return callClaude3API('claude-3-haiku-20240307', systemInput, userInput);
+    case 'claude_opus':
+      return callClaude3API('claude-3-opus-20240229', systemInput, userInput);
     default:
       return new Response(JSON.stringify({ error: 'Unsupported API type' }), { status: 400 });
   }
@@ -37,3 +42,53 @@ async function callChatGPTAPI(model, systemInput, userInput) {
   const data = await response.json();
   return new Response(JSON.stringify(data));
 }
+
+async function callChatGPTFunctionAPI(systemInput, userInput) {
+  // ChatGPT Function APIを呼び出すロジック
+  // 以下は疑似コードです
+  const response = await fetch('ChatGPT Function APIのURL', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo-0613',
+      messages: [
+        {
+          role: 'system',
+          content: systemInput + userInput,
+        },
+      ],
+      function_call: {
+        name: 'getCurrentTime',
+      },
+    }),
+  });
+
+  const data = await response.json();
+  return new Response(JSON.stringify(data));
+}
+
+async function callClaude3API(model, systemInput, userInput) {
+  // Claude3のAPIを呼び出すロジック
+  // 以下は疑似コードです
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "anthropic-version": "2023-06-01",
+      'X-API-Key': env.CLAUDE_API_KEY,
+    },
+    body: JSON.stringify({
+      model: model,
+      max_tokens: 1024,
+      system: systemInput,
+      messages: [{ role: 'user', content: userInput }],
+    }),
+  });
+
+  const data = await response.json();
+  return new Response(JSON.stringify(data));
+}
+
