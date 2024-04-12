@@ -161,6 +161,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
       }
 
       console.log({ apiType, systemInput, userInput })
+      const decoder = json=>json?.choices?.[0]?.message?.content
       // google.script.run.withSuccessHandler(updateResponse).callAIAPI(apiType, systemInput, userInput);
       fetch('/api/callAIAPI', {
         method: 'POST',
@@ -173,7 +174,8 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
           userInput: userInput,
         }),
       })
-        .then(response => response.text())
+        .then(response => response.json())
+        .then(decoder)
         .then(updateResponse)
         .catch(error => console.error('Error:', error));
     }
