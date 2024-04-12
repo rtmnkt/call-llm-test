@@ -141,7 +141,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
       document.getElementById('textInput').value = previousText;
     });
 
-    function callAI() {
+    async function callAI() {
       const apiType = document.getElementById('apiSelect').value;
       const systemInput = document.getElementById('systemInput').value;
       let userInput = '';
@@ -176,11 +176,15 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
           default: throw new Error('unknown apiType')
         }
       })()
+
+      const pass = new URL(location.href).searchParams.get('p') ?? '';
+
       // google.script.run.withSuccessHandler(updateResponse).callAIAPI(apiType, systemInput, userInput);
       fetch('/api/callAIAPI', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': pass
         },
         body: JSON.stringify({
           apiType: apiType,
