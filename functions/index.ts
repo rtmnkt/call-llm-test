@@ -3,7 +3,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   if (url.searchParams.get('p') == 'test314') {
     const res = Response.redirect('/index2.html', )
     // res = new Response(res.body, res);
-    return res
+    return new Response('2')
   }
   return new Response('error')
 }
