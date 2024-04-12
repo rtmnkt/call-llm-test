@@ -3,7 +3,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   if (url.searchParams.get('p') == 'test314') {
     // const res = Response.redirect('/index2.html', 301)
     // res = new Response(res.body, res);
-    // return new Response('2')
+    const res = fetch('/index2.html')
+    await context.waitUntil(res)
+    return new Response((await res).body)
   }
   return new Response('error')
 }
