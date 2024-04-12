@@ -164,9 +164,9 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
       const decoder = (() => {
         switch (apiType) {
           case 'chatgpt':
-          case 'chatgpt4': json => json?.choices?.[0]?.message?.content
+          case 'chatgpt4': return json => json?.choices?.[0]?.message?.content
           case 'claude_opus':
-          case 'claude_haiku': json => json?.content?.[0]?.text
+          case 'claude_haiku': return json => json?.content?.[0]?.text
           default: throw new Error('unknown apiType')
         }
       })()
