@@ -3,10 +3,7 @@ let env: Env
 export const onRequestPost: PagesFunction<Env> = async (context,) => {
   const { request } = context;
 
-  const hashHex = await sha256(request.headers.get('Authorization') ?? '');
-  if (hashHex != 'adcdd46d404416efa4da09a7768c19323613fd1d0536aa2f1740583124ea9622')
-
-    env = context.env;
+  env = context.env;
   const { apiType, systemInput, userInput } = await request.json() as { apiType: string, systemInput: string, userInput: string };
 
   switch (apiType) {
@@ -123,18 +120,4 @@ async function callPerplexityAPI(model, systemInput, userInput) {
 
   const data = await response.json();
   return new Response(JSON.stringify(data));
-}
-
-async function sha256(message) {
-  // 文字列をUint8Arrayにエンコード
-  const msgBuffer = new TextEncoder().encode(message);
-
-  // ハッシュ化
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-
-  // ArrayBufferを16進数の文字列に変換
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-  return hashHex;
 }
