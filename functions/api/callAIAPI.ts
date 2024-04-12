@@ -16,6 +16,10 @@ export const onRequestPost: PagesFunction<Env> = async (context,) => {
       return callClaude3API('claude-3-haiku-20240307', systemInput, userInput);
     case 'claude_opus':
       return callClaude3API('claude-3-opus-20240229', systemInput, userInput);
+    case 'sonar-small-chat':
+    case 'sonar-medium-online':
+    case 'codellama-70b-instruct':
+      return callPerplexityAPI(apiType, systemInput, userInput);
     default:
       return new Response(JSON.stringify({ error: 'Unsupported API type' }), { status: 400 });
   }
@@ -92,3 +96,27 @@ async function callClaude3API(model, systemInput, userInput) {
   return new Response(JSON.stringify(data));
 }
 
+async function callPerplexityAPI(model, systemInput, userInput) {
+  /*
+  sonar-small-chat, sonar-small-online, sonar-medium-chat, sonar-medium-online, mistral-7b-instruct, and mixtral-8x7b-instruct.
+  */
+  const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${env.PERPLEXITY_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: model,
+      max_tokens: 1024,
+      messages: [
+        { role: 'system', content: systemInput },
+        { role: 'user', content: userInput },
+      ],
+    }),
+  });
+
+  const data = await response.json();
+  return new Response(JSON.stringify(data));
+}
