@@ -147,7 +147,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
     async function callAI() {
       const _apiType = document.getElementById('apiSelect').value;
       if (_apiType == '') { alert('言語モデルを選択してください'); return; }
-      const [apiType, apiProvider] = _apiType.split(':');
+      const [apiProvider, apiType] = _apiType.split(':');
 
       const systemInput = document.getElementById('systemInput').value;
       let userInput = '';
