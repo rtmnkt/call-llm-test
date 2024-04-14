@@ -188,6 +188,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
               const div = document.createElement('div');
               div.innerText = `[${_.p}][${_.m}] calling...`;
               responseElement.appendChild(div)
+              responseElement.appendChild(document.createElement('hr'))
               return { ..._, div };
             })
             .map(_ => {
