@@ -21,6 +21,7 @@
     <div class="mb-4">
       <label for="apiSelect" class="block mb-2 font-bold">Select API(Model):</label>
       <select id="apiSelect" class="w-full p-2 border border-gray-300 rounded">
+        <option value="custom:parallel" selected>Parallel Call 3 API (実験的)</option>
         <option value="perplexity:sonar-small-chat" selected>Perplexity API small (sonar-small-chat)</option>
         <option value="perplexity:sonar-medium-online">💸Perplexity API +WEB検索 (sonar-medium-online)💸</option>
         <option value="perplexity:codellama-70b-instruct">Perplexity API CodeLlama (codellama-70b-instruct)</option>
@@ -168,8 +169,42 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
       } else {
         userInput = document.getElementById('userInput').value;
       }
+      if (apiProvider == 'custom' && apiType == 'parallel') {
+        const responseElement = document.getElementById('response');
+        responseElement.innerHTML = '';
+        const f = (res, _) => {
+          _.innerText = '' + _.m + ': ' + res;
+        }
 
-      console.log({ apiType, systemInput, userInput })
+        // 3つのAPIを並列で呼び出す
+        [
+          { p: 'perplexity', m: 'sonar-small-chat', },
+          { p: 'openai', m: 'gpt-3.5-turbo-0125', },
+          { p: 'anthropic', m: 'claude-3-haiku-20240307', },
+        ]
+          .map(_ => {
+            // 配置先の要素を準備する
+            const div = document.createElement('div');
+            div.innerText = '' + _.p + '>' + _.m + ': ' + 'calling...';
+            responseElement.appendChild(div)
+            return { ..._, div };
+          })
+          .forEach(_ => {
+            // 並列でAPIを呼び出し, 順次表示する
+            fetchAI({ apiProvider: _.p, apiType: _.m, systemInput, userInput })
+              .then(res => f(res, _))
+          });
+
+        return;
+      } else {
+        fetchAI({ apiProvider, apiType, systemInput, userInput })
+          .then(updateResponse)
+          .catch(error => console.error('Error:', error));
+      }
+    }
+
+    async function fetchAI({ apiProvider, apiType, systemInput, userInput }) {
+      console.log({ apiProvider, apiType, systemInput, userInput })
       const decoder = (() => {
         switch (apiProvider) {
           case 'openai': return json => json?.choices?.[0]?.message?.content
@@ -182,7 +217,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
       const pass = new URL(location.href).searchParams.get('p') ?? '';
 
       // google.script.run.withSuccessHandler(updateResponse).callAIAPI(apiType, systemInput, userInput);
-      fetch('/api/callAIAPI', {
+      return fetch('/api/callAIAPI', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,9 +231,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
         }),
       })
         .then(response => response.json())
-        .then(decoder)
-        .then(updateResponse)
-        .catch(error => console.error('Error:', error));
+        .then(decoder);
     }
 
     function updateResponse(response) {
