@@ -177,23 +177,29 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
         }
 
         // 3つのAPIを並列で呼び出す
-        [
-          { p: 'perplexity', m: 'sonar-small-chat', },
-          { p: 'openai', m: 'gpt-3.5-turbo-0125', },
-          { p: 'anthropic', m: 'claude-3-haiku-20240307', },
-        ]
-          .map(_ => {
-            // 配置先の要素を準備する
-            const div = document.createElement('div');
-            div.innerText = `[${_.p}][${_.m}] calling...`;
-            responseElement.appendChild(div)
-            return { ..._, div };
-          })
-          .forEach(_ => {
-            // 並列でAPIを呼び出し, 順次表示する
-            fetchAI({ apiProvider: _.p, apiType: _.m, systemInput, userInput })
-              .then(res => f(res, _))
-          });
+        const parallelCalls =
+          [
+            { p: 'perplexity', m: 'sonar-small-chat', },
+            { p: 'openai', m: 'gpt-3.5-turbo-0125', },
+            { p: 'anthropic', m: 'claude-3-haiku-20240307', },
+          ]
+            .map(_ => {
+              // 配置先の要素を準備する
+              const div = document.createElement('div');
+              div.innerText = `[${_.p}][${_.m}] calling...`;
+              responseElement.appendChild(div)
+              return { ..._, div };
+            })
+            .map(_ => {
+              // 並列でAPIを呼び出し, 順次表示する
+              return fetchAI({ apiProvider: _.p, apiType: _.m, systemInput, userInput })
+                .then(res => f(res, _))
+            });
+        // 後始末
+        Promise.all(parallelCalls).then(() => {
+          document.getElementById('sendButton').disabled = false;
+          document.getElementById('status').innerText = '';
+        });
 
         return;
       } else {
