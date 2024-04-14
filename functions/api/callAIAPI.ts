@@ -1,25 +1,22 @@
 let env: Env
+function echo(modelName: string, apiPath: string) {
+  console.log(`called: modelName=${modelName}, apiPath=${apiPath}`);
+}
 
 export const onRequestPost: PagesFunction<Env> = async (context,) => {
   const { request } = context;
 
   env = context.env;
-  const { apiType, systemInput, userInput } = await request.json() as { apiType: string, systemInput: string, userInput: string };
+  const { apiType, apiProvider, systemInput, userInput } = await request.json() as { apiType: string, systemInput: string, userInput: string };
 
-  switch (apiType) {
-    case 'chatgpt':
-      return callChatGPTAPI('gpt-3.5-turbo-0125', systemInput, userInput);
-    case 'chatgpt4':
-      return callChatGPTAPI('gpt-4-0125-preview', systemInput, userInput);
-    case 'chatgpt_function':
-      return callChatGPTFunctionAPI(systemInput, userInput);
-    case 'claude_haiku':
-      return callClaude3API('claude-3-haiku-20240307', systemInput, userInput);
-    case 'claude_opus':
-      return callClaude3API('claude-3-opus-20240229', systemInput, userInput);
-    case 'sonar-small-chat':
-    case 'sonar-medium-online':
-    case 'codellama-70b-instruct':
+  switch (apiProvider) {
+    case 'openai':
+      return callChatGPTAPI(apiType, systemInput, userInput);
+    // case 'chatgpt_function':
+    //   return callChatGPTFunctionAPI(systemInput, userInput);
+    case 'anthropic':
+      return callClaude3API(apiType, systemInput, userInput);
+    case 'perplexity':
       return callPerplexityAPI(apiType, systemInput, userInput);
     default:
       return new Response(JSON.stringify({ error: 'Unsupported API type' }), { status: 400 });
@@ -29,7 +26,8 @@ export const onRequestPost: PagesFunction<Env> = async (context,) => {
 async function callChatGPTAPI(model, systemInput, userInput) {
   // OpenAI APIを呼び出すロジックを実装
   // ここでは疑似コードとしています
-  const response = await fetch(env.CHATGPT_API_URL, {
+  const path = env.CHATGPT_API_URL;
+  const response = await fetch(path, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -43,42 +41,22 @@ async function callChatGPTAPI(model, systemInput, userInput) {
       ],
     }),
   });
+  echo(model, path);
 
   const data = await response.json();
   return new Response(JSON.stringify(data));
 }
 
+// unimplemented
 async function callChatGPTFunctionAPI(systemInput, userInput) {
   // ChatGPT Function APIを呼び出すロジック
-  // 以下は疑似コードです
-  const response = await fetch('ChatGPT Function APIのURL', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-3.5-turbo-0613',
-      messages: [
-        {
-          role: 'system',
-          content: systemInput + userInput,
-        },
-      ],
-      function_call: {
-        name: 'getCurrentTime',
-      },
-    }),
-  });
-
-  const data = await response.json();
-  return new Response(JSON.stringify(data));
+  return new Response(JSON.stringify(null));
 }
 
 async function callClaude3API(model, systemInput, userInput) {
+  const path = 'https://api.anthropic.com/v1/messages';
   // Claude3のAPIを呼び出すロジック
-  // 以下は疑似コードです
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch(path, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -92,6 +70,7 @@ async function callClaude3API(model, systemInput, userInput) {
       messages: [{ role: 'user', content: userInput }],
     }),
   });
+  echo(model, path);
 
   const data = await response.json();
   return new Response(JSON.stringify(data));
@@ -101,7 +80,8 @@ async function callPerplexityAPI(model, systemInput, userInput) {
   /*
   sonar-small-chat, sonar-small-online, sonar-medium-chat, sonar-medium-online, mistral-7b-instruct, and mixtral-8x7b-instruct.
   */
-  const response = await fetch('https://api.perplexity.ai/chat/completions', {
+  const path = 'https://api.perplexity.ai/chat/completions';
+  const response = await fetch(path, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -117,6 +97,7 @@ async function callPerplexityAPI(model, systemInput, userInput) {
       ],
     }),
   });
+  echo(model, path);
 
   const data = await response.json();
   return new Response(JSON.stringify(data));
