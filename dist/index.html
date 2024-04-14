@@ -173,7 +173,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
         const responseElement = document.getElementById('response');
         responseElement.innerHTML = '';
         const f = (res, _) => {
-          _.innerText = '' + _.m + ': ' + res;
+          _.div.innerText = '' + _.m + ': ' + res;
         }
 
         // 3つのAPIを並列で呼び出す
@@ -185,7 +185,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
           .map(_ => {
             // 配置先の要素を準備する
             const div = document.createElement('div');
-            div.innerText = '' + _.p + '>' + _.m + ': ' + 'calling...';
+            div.innerText = `[${_.p}][${_.m}] calling...`;
             responseElement.appendChild(div)
             return { ..._, div };
           })
