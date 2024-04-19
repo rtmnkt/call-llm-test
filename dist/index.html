@@ -14,6 +14,40 @@
       display: block;
     }
   </style>
+  <style>
+    .typing-animation {
+      display: inline-block;
+      overflow: hidden;
+      border-right: 0.15em solid #4b5563;
+      white-space: nowrap;
+      margin: 0 auto;
+      letter-spacing: 0.15em;
+      animation: typing 1s steps(40, end), blink-caret 0.75s step-end infinite;
+    }
+
+    @keyframes typing {
+      from {
+        width: 0;
+      }
+
+      to {
+        width: 100%;
+      }
+    }
+
+    @keyframes blink-caret {
+
+      from,
+      to {
+        border-color: transparent;
+      }
+
+      50% {
+        border-color: #4b5563;
+      }
+    }
+  </style>
+
 </head>
 
 <body class="bg-gray-100">
@@ -172,9 +206,10 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
       if (apiProvider == 'custom' && apiType == 'parallel') {
         const responseElement = document.getElementById('response');
         responseElement.innerHTML = '';
+
         const f = (res, _) => {
-          _.div.innerText = `[${_.p}][${_.m}] ${res}`;
-        }
+          _.div.innerHTML = `<span class="font-bold">[${_.p}][${_.m}]</span> <span class="typing-animation">${res}</span>`;
+        };
 
         // 3つのAPIを並列で呼び出す
         const parallelCalls =
@@ -186,16 +221,17 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
             .map(_ => {
               // 配置先の要素を準備する
               const div = document.createElement('div');
-              div.innerText = `[${_.p}][${_.m}] calling...`;
-              responseElement.appendChild(div)
-              responseElement.appendChild(document.createElement('hr'))
+              div.classList.add('mb-4');
+              div.innerHTML = `<span class="font-bold">[${_.p}][${_.m}]</span> <span>calling...</span>`;
+              responseElement.appendChild(div);
               return { ..._, div };
             })
             .map(_ => {
               // 並列でAPIを呼び出し, 順次表示する
               return fetchAI({ apiProvider: _.p, apiType: _.m, systemInput, userInput })
-                .then(res => f(res, _))
+                .then(res => f(res, _));
             });
+
         // 後始末
         Promise.all(parallelCalls).then(() => {
           document.getElementById('sendButton').disabled = false;
