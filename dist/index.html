@@ -166,6 +166,9 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
       document.getElementById('textInput').value = previousText;
     });
 
+    // set default value
+    document.getElementById('textInput').value = '🍎を👤へ📤する（お店を経由して）'
+
     async function callAI() {
       const _apiType = document.getElementById('apiSelect').value;
       if (_apiType == '') { alert('言語モデルを選択してください'); return; }
