@@ -15,43 +15,24 @@
     }
   </style>
   <style>
-    .typing-animation {
-      display: inline-block;
-      overflow: hidden;
-      /* border-right: 0.15em solid #4b5563; */
-      white-space: unset;
-      margin: 0 auto;
-      animation: typing 1s steps(40, end);
+    .slide-in {
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slide-in 1s ease-out forwards;
     }
 
-    .typing-animation.done {
-      border-right: none;
-      animation: none;
-    }
-
-    @keyframes typing {
-      from {
-        width: 0;
+    @keyframes slide-in {
+      0% {
+        opacity: 0;
+        transform: translateX(100%);
       }
 
-      to {
-        width: 100%;
-      }
-    }
-
-    @keyframes blink-caret {
-
-      from,
-      to {
-        border-color: transparent;
-      }
-
-      50% {
-        border-color: #4b5563;
+      100% {
+        opacity: 1;
+        transform: translateX(0);
       }
     }
   </style>
-
 
 </head>
 
@@ -213,13 +194,7 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
         responseElement.innerHTML = '';
 
         const f = (res, _) => {
-          _.div.innerHTML = `<span class="font-bold">[${_.p}][${_.m}]</span><br/><span class="typing-animation">${res}</span>`;
-
-          // アニメーションが終了したらタイプライター風の縦線を消す
-          const typingAnimation = _.div.querySelector('.typing-animation');
-          setTimeout(() => {
-            typingAnimation.classList.add('done');
-          }, res.length * 50 + 1000);
+          _.div.innerHTML = `<span class="font-bold">[${_.p}][${_.m}]</span> <span class="slide-in">${res}</span>`;
         };
 
         // 3つのAPIを並列で呼び出す
