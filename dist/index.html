@@ -45,8 +45,8 @@
       <select id="apiSelect" class="w-full p-2 border border-gray-300 rounded">
         <option value="custom:parallel" selected>3つのモデルを同時に呼ぶ (実験的)</option>
         <option value="">-----🔽 Perplexity 🔽-----</option>
-        <option value="perplexity:llama-3-sonar-small-32k-chat">API small (llama-3-sonar-small-32k-chat)</option>
-        <option value="perplexity:llama-3-sonar-large-32k-online">💸API large + WEB検索 (llama-3-sonar-large-32k-online)💸
+        <option value="perplexity:llama-3.1-sonar-small-128k-chat"> small (llama-3.1-sonar-small-128k-chat)</option>
+        <option value="perplexity:llama-3.1-sonar-large-128k-online">💸 large + WEB検索 (llama-3.1-sonar-large-128k-online)💸
         </option>
         <option value="perplexity:llama-3-70b-instruct">💸API Llama-3-70b (llama-3-70b-instruct)💸</option>
         <option value="">-----🔽 OpenAI 🔽-----</option>
@@ -209,8 +209,8 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
         // 3つのAPIを並列で呼び出す
         const parallelCalls =
           [
-            { p: 'perplexity', m: 'llama-3-sonar-small-32k-chat', },
-            { p: 'openai', m: 'gpt-3.5-turbo-0125', },
+            { p: 'perplexity', m: 'llama-3.1-sonar-small-128k-chat', },
+            { p: 'openai', m: 'gpt-4o-mini', },
             { p: 'anthropic', m: 'claude-3-haiku-20240307', },
           ]
             .map(_ => {
