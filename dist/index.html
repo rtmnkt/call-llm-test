@@ -203,7 +203,11 @@ Input=ユーザーのリストを取得する, Output = {"type": "function", "re
         responseElement.innerHTML = '';
 
         const f = (res, _) => {
-          _.div.innerHTML = `<span class="font-bold">[${_.p}][${_.m}]</span> <span class="slide-in">${res}</span>`;
+          const placeholder = document.createElement('span');
+          placeholder.classList.add('slide-in')
+          placeholder.innerText = res
+          _.div.innerHTML = `<span class="font-bold">[${_.p}][${_.m}]</span> `;
+          _.div.appendChild(placeholder)
         };
 
         // 3つのAPIを並列で呼び出す
